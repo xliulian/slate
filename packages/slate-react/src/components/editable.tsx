@@ -98,6 +98,7 @@ export type EditableProps = {
   style?: React.CSSProperties
   renderElement?: (props: RenderElementProps) => JSX.Element
   renderLeaf?: (props: RenderLeafProps) => JSX.Element
+  scrollSelectionIntoView?: (editor: ReactEditor, domRange: DOMRange) => void
   as?: React.ElementType
 } & React.TextareaHTMLAttributes<HTMLDivElement>
 
@@ -114,6 +115,7 @@ export const Editable = (props: EditableProps) => {
     readOnly = false,
     renderElement,
     renderLeaf,
+    scrollSelectionIntoView = defaultScrollSelectionIntoView,
     style = {},
     as: Component = 'div',
     ...attributes
@@ -194,7 +196,6 @@ export const Editable = (props: EditableProps) => {
     }
 
     // Otherwise the DOM selection is out of sync, so update it.
-    const el = ReactEditor.toDOMNode(editor, editor)
     state.isUpdatingSelection = true
 
     const newDomRange = selection && ReactEditor.toDOMRange(editor, selection)
@@ -215,15 +216,7 @@ export const Editable = (props: EditableProps) => {
           newDomRange.endOffset
         )
       }
-      const leafEl = newDomRange.startContainer.parentElement!
-      leafEl.getBoundingClientRect = newDomRange.getBoundingClientRect.bind(
-        newDomRange
-      )
-      scrollIntoView(leafEl, {
-        scrollMode: 'if-needed',
-        boundary: el,
-      })
-      delete leafEl.getBoundingClientRect
+      scrollSelectionIntoView(editor, newDomRange)
     } else {
       domSelection.removeAllRanges()
     }
@@ -232,6 +225,7 @@ export const Editable = (props: EditableProps) => {
       // COMPAT: In Firefox, it's not enough to create a range, you also need
       // to focus the contenteditable element too. (2016/11/16)
       if (newDomRange && IS_FIREFOX) {
+        const el = ReactEditor.toDOMNode(editor, editor)
         el.focus()
       }
 
@@ -1054,6 +1048,24 @@ export const Editable = (props: EditableProps) => {
  */
 
 const defaultDecorate: (entry: NodeEntry) => Range[] = () => []
+
+
+/**
+ * A default implement to scroll dom range into view.
+ */
+
+const defaultScrollSelectionIntoView = (editor: ReactEditor, domRange: DOMRange) => {
+  const el = ReactEditor.toDOMNode(editor, editor)
+  const leafEl = domRange.startContainer.parentElement!
+  leafEl.getBoundingClientRect = domRange.getBoundingClientRect.bind(
+    domRange
+  )
+  scrollIntoView(leafEl, {
+    scrollMode: 'if-needed',
+    boundary: el,
+  })
+  delete leafEl.getBoundingClientRect
+}
 
 /**
  * Check if two DOM range objects are equal.
