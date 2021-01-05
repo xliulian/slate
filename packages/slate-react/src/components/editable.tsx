@@ -94,6 +94,7 @@ export type EditableProps = {
   style?: React.CSSProperties
   renderElement?: (props: RenderElementProps) => JSX.Element
   renderLeaf?: (props: RenderLeafProps) => JSX.Element
+  scrollSelectionIntoView?: (editor: ReactEditor, domRange: DOMRange) => void
   as?: React.ElementType
 } & React.TextareaHTMLAttributes<HTMLDivElement>
 
@@ -110,6 +111,7 @@ export const Editable = (props: EditableProps) => {
     readOnly = false,
     renderElement,
     renderLeaf,
+    scrollSelectionIntoView,
     style = {},
     as: Component = 'div',
     ...attributes
@@ -199,11 +201,15 @@ export const Editable = (props: EditableProps) => {
           newDomRange.endOffset
         )
       }
-      const leafEl = newDomRange.startContainer.parentElement!
-      scrollIntoView(leafEl, {
-        scrollMode: 'if-needed',
-        boundary: el,
-      })
+      if (scrollSelectionIntoView) {
+        scrollSelectionIntoView(editor, newDomRange)
+      } else {
+        const leafEl = newDomRange.startContainer.parentElement!
+        scrollIntoView(leafEl, {
+          scrollMode: 'if-needed',
+          boundary: el,
+        })
+      }
     } else {
       domSelection.removeAllRanges()
     }
