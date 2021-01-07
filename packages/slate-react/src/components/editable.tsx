@@ -241,6 +241,11 @@ export const Editable = (props: EditableProps) => {
         isComposing: boolean
       }
     ) => {
+      // XXX: sometimes onCompositionEnd is not called (e.g. if composing is broken by dom change)
+      //      after that, we can only rely on other events to set correct isComposing state.
+      if (event.isComposing === false) {
+        state.isComposing = false
+      }
       if (
         !readOnly &&
         hasEditableTarget(editor, event.target) &&
@@ -518,6 +523,9 @@ export const Editable = (props: EditableProps) => {
         )}
         onBlur={useCallback(
           (event: React.FocusEvent<HTMLDivElement>) => {
+            // XXX: sometimes onCompositionEnd is not called (e.g. if composing is broken by dom change)
+            //      after that, we can only rely on other events to set correct isComposing state.
+            state.isComposing = false
             if (
               readOnly ||
               state.isUpdatingSelection ||
