@@ -9,6 +9,7 @@ import { Editor, Node, Path, Descendant, ExtendedType, Ancestor } from '..'
 
 export interface BaseElement {
   children: Descendant[]
+  childrenOrderedBy?: string | string[]
 }
 
 export type Element = ExtendedType<'Element', BaseElement>

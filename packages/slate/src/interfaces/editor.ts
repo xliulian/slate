@@ -43,6 +43,7 @@ export interface BaseEditor {
   selection: Selection
   operations: Operation[]
   marks: Omit<Text, 'text'> | null
+  childrenOrderedBy?: string | string[]
 
   // Schema-specific node behaviors.
   isInline: (element: Element) => boolean
