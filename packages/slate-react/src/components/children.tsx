@@ -1,5 +1,6 @@
 import React from 'react'
 import { Editor, Range, Element, NodeEntry, Ancestor, Descendant } from 'slate'
+import sortBy from 'lodash/sortBy'
 
 import ElementComponent from './element'
 import TextComponent from './text'
@@ -36,9 +37,18 @@ const Children = (props: {
     !editor.isInline(node) &&
     Editor.hasInlines(editor, node)
 
-  for (let i = 0; i < node.children.length; i++) {
+  const nodeChildren =
+    isLeafBlock || !node.childrenOrderedBy
+      ? node.children.map((child, idx) => [child, idx])
+      : sortBy(node.children, node.childrenOrderedBy).map(child => [
+          child,
+          node.children.indexOf(child),
+        ])
+
+  for (const child of nodeChildren) {
+    const n = child[0] as Descendant
+    const i = child[1] as number
     const p = path.concat(i)
-    const n = node.children[i] as Descendant
     const key = ReactEditor.findKey(editor, n)
     const range = Editor.range(editor, p)
     const sel = selection && Range.intersection(range, selection)
@@ -69,7 +79,7 @@ const Children = (props: {
         <TextComponent
           decorations={ds}
           key={key.id}
-          isLast={isLeafBlock && i === node.children.length - 1}
+          isLast={isLeafBlock && i === nodeChildren.length - 1}
           parent={node}
           renderLeaf={renderLeaf}
           text={n}
