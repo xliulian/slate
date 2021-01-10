@@ -19,3 +19,6 @@ export { useSlate } from './hooks/use-slate'
 // Plugin
 export { ReactEditor } from './plugin/react-editor'
 export { withReact } from './plugin/with-react'
+
+// Utils
+export { default as Hotkeys } from './utils/hotkeys'
