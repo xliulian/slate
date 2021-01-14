@@ -174,7 +174,9 @@ export const Editable = (props: EditableProps) => {
       hasDomSelection &&
       hasDomSelectionInEditor &&
       selection &&
-      Range.equals(ReactEditor.toSlateRange(editor, domSelection), selection)
+      Range.equals(ReactEditor.toSlateRange(editor, domSelection), selection) &&
+      isDOMText(domSelection.anchorNode) &&
+      isDOMText(domSelection.focusNode)
     ) {
       return
     }
