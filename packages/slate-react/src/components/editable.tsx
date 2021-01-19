@@ -16,6 +16,7 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import Children from './children'
 import Hotkeys from '../utils/hotkeys'
 import {
+  IS_IOS,
   IS_FIREFOX,
   IS_SAFARI,
   IS_EDGE_LEGACY,
@@ -629,7 +630,7 @@ export const Editable = (props: EditableProps) => {
               // aren't correct and never fire the "insertFromComposition"
               // type that we need. So instead, insert whenever a composition
               // ends since it will already have been committed to the DOM.
-              if (!IS_SAFARI && !IS_FIREFOX && event.data) {
+              if (!IS_SAFARI && !IS_FIREFOX && !IS_IOS && event.data) {
                 Editor.insertText(editor, event.data)
               }
             }
