@@ -226,10 +226,16 @@ export const Path: PathInterface = {
    */
 
   isPath(value: any): value is Path {
-    return (
+    if (
       Array.isArray(value) &&
       (value.length === 0 || typeof value[0] === 'number')
-    )
+    ) {
+      if (value.length > 0 && typeof value[value.length - 1] !== 'number') {
+        throw new Error(`Invalid path [${value}]`)
+      }
+      return true
+    }
+    return false
   },
 
   /**
