@@ -76,6 +76,7 @@ export const ReactEditor = {
       child = parent
     }
 
+    console.error('Unable to find the path for Slate node:', node, editor, NODE_TO_PARENT, NODE_TO_INDEX)
     throw new Error(
       `Unable to find the path for Slate node: ${JSON.stringify(node)}`
     )
