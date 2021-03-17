@@ -19,9 +19,19 @@ export const withReact = <T extends Editor>(editor: T) => {
 
     switch (op.type) {
       case 'insert_text':
-      case 'remove_text':
-      case 'set_node': {
+      case 'remove_text': {
         for (const [node, path] of Editor.levels(e, { at: op.path })) {
+          const key = ReactEditor.findKey(e, node)
+          matches.push([path, key])
+        }
+
+        break
+      }
+
+      case 'set_node': {
+        for (const [node, path] of Editor.levels(e, {
+          at: op.newProperties.hasOwnProperty('type') ? Path.parent(op.path) : op.path,
+        })) {
           const key = ReactEditor.findKey(e, node)
           matches.push([path, key])
         }
