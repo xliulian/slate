@@ -440,7 +440,7 @@ export const Editable = (props: EditableProps) => {
           Transforms.deselect(editor)
         }
       }
-    }, 100),
+    }, 100, { leading: false }),
     [readOnly]
   )
 
