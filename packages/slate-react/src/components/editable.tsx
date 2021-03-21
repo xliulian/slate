@@ -391,7 +391,7 @@ export const Editable = (props: EditableProps) => {
   // and non-standard so it doesn't fire until after a selection has been
   // released. This causes issues in situations where another change happens
   // while a selection is being dragged.
-  const onDOMSelectionChange = useCallback(
+  const onDOMSelectionChange = useCallback(() => setTimeout(
     throttle(() => {
       if (!readOnly && !state.isComposing && !state.isUpdatingSelection) {
         const { activeElement } = window.document
@@ -426,7 +426,7 @@ export const Editable = (props: EditableProps) => {
           Transforms.deselect(editor)
         }
       }
-    }, 100, { leading: false }),
+    }, 100)),
     [readOnly]
   )
 
