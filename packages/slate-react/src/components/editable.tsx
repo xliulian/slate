@@ -25,6 +25,7 @@ import { ReactEditor } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useSlate } from '../hooks/use-slate'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
+import { DecorateContext } from '../hooks/use-decorate'
 import {
   DOMElement,
   DOMNode,
@@ -975,14 +976,15 @@ export const Editable = (props: EditableProps) => {
           [readOnly, attributes.onPaste]
         )}
       >
-        <Children
-          decorate={decorate}
-          decorations={decorations}
-          node={editor}
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          selection={editor.selection}
-        />
+        <DecorateContext.Provider value={decorate}>
+          <Children
+            decorations={decorations}
+            node={editor}
+            renderElement={renderElement}
+            renderLeaf={renderLeaf}
+            selection={editor.selection}
+          />
+        </DecorateContext.Provider>
       </Component>
     </ReadOnlyContext.Provider>
   )
@@ -992,7 +994,7 @@ export const Editable = (props: EditableProps) => {
  * A default memoized decorate function.
  */
 
-const defaultDecorate = () => []
+const defaultDecorate: (entry: NodeEntry) => Range[] = () => []
 
 /**
  * Check if two DOM range objects are equal.
