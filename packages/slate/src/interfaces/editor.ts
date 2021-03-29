@@ -1508,7 +1508,7 @@ export const Editor: EditorInterface = {
     let [start, end] = Range.edges(range)
 
     // PERF: exit early if we can guarantee that the range isn't hanging.
-    if (start.offset !== 0 || end.offset !== 0 || Range.isCollapsed(range)) {
+    if (end.offset !== 0 || Range.isCollapsed(range)) {
       return range
     }
 
@@ -1536,6 +1536,9 @@ export const Editor: EditorInterface = {
         end = { path, offset: node.text.length }
         break
       }
+    }
+    if (Point.isBefore(end, start)) {
+      end = start
     }
 
     return { anchor: start, focus: end }
