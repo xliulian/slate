@@ -101,7 +101,7 @@ export const TextTransforms: TextTransforms = {
       }
 
       if (!hanging) {
-        at = Editor.unhangRange(editor, at, { voids })
+        at = Editor.unhangRange(editor, at)
       }
 
       let [start, end] = Range.edges(at)

@@ -1523,10 +1523,15 @@ export const Editor: EditorInterface = {
 
     for (const [node, path] of Editor.nodes(editor, {
       at: before,
-      match: Text.isText,
+      match: n => Text.isText(n) || editor.isInline(n) && editor.isVoid(n),
       reverse: true,
       voids,
     })) {
+      if (!Text.isText(node)) {
+        // no unhang for inline void
+        end = Editor.start(editor, path)
+        break
+      }
       if (skip) {
         skip = false
         continue
