@@ -369,8 +369,17 @@ export const Editable = (props: EditableProps) => {
           case 'insertFromYank':
           case 'insertReplacementText':
           case 'insertText': {
-            if (data instanceof DataTransfer) {
-              ReactEditor.insertData(editor, data)
+            if (type === 'insertFromComposition') {
+              // COMPAT: in Safari, `compositionend` is dispatched after the
+              // `beforeinput` for "insertFromComposition". But if we wait for it
+              // then we will abort because we're still composing and the selection
+              // won't be updated properly.
+              // https://www.w3.org/TR/input-events-2/
+              state.isComposing = false
+            }
+
+            if (data instanceof window.DataTransfer) {
+              ReactEditor.insertData(editor, data as DataTransfer)
             } else if (typeof data === 'string') {
               Editor.insertText(editor, data)
             }
