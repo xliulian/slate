@@ -57,8 +57,13 @@ const Text = (props: {
     }
   })
 
+  const spanProps = {}
+  if (text.text.length === 0) {
+    spanProps['data-slate-text-is-empty'] = true
+  }
+
   return (
-    <span data-slate-node="text" ref={ref}>
+    <span data-slate-node="text" ref={ref} {...spanProps}>
       {children}
     </span>
   )
