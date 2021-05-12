@@ -1,4 +1,4 @@
-import { Editor, Operation, Path } from 'slate'
+import { Editor, Operation, Path, SetSelectionOperation } from 'slate'
 
 import { HistoryEditor } from './history-editor'
 
@@ -90,6 +90,16 @@ export const withHistory = <T extends Editor>(editor: T) => {
       if (lastBatch && merge) {
         if (overwrite) {
           lastBatch.pop()
+          // XXX: only set_selection op do override, and we do it carefully also for the incomplete set_selection case.
+          if (op.type === 'set_selection' && lastOp?.type === 'set_selection' && op.newProperties) {
+            op = {
+              ...lastOp!,
+              newProperties: {
+                ...lastOp.newProperties,
+                ...op.newProperties
+              }
+            } as SetSelectionOperation
+          }
         }
 
         lastBatch.push(op)
