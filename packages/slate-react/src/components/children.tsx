@@ -7,6 +7,7 @@ import TextComponent from './text'
 import { ReactEditor } from '..'
 import { useSlateStatic } from '../hooks/use-slate-static'
 import { useDecorate } from '../hooks/use-decorate'
+import { IndexContext } from '../hooks/use-index'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
 import { RenderElementProps, RenderLeafProps } from './editable'
 
@@ -58,14 +59,16 @@ const Children = (props: {
 
     if (Element.isElement(n)) {
       children.push(
-        <ElementComponent
-          decorations={ds}
-          element={n}
-          key={key.id}
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          selection={sel}
-        />
+        <IndexContext.Provider key={key.id} value={i}>
+          <ElementComponent
+            decorations={ds}
+            element={n}
+            key={key.id}
+            renderElement={renderElement}
+            renderLeaf={renderLeaf}
+            selection={sel}
+          />
+        </IndexContext.Provider>
       )
     } else {
       children.push(

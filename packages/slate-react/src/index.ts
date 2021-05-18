@@ -14,6 +14,7 @@ export { useSlateStatic } from './hooks/use-slate-static'
 export { useFocused } from './hooks/use-focused'
 export { useReadOnly } from './hooks/use-read-only'
 export { useSelected } from './hooks/use-selected'
+export { useIndex } from './hooks/use-index'
 export { useSlate } from './hooks/use-slate'
 
 // Plugin
