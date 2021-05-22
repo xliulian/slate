@@ -255,6 +255,8 @@ export const Editable = (props: EditableProps) => {
       //      after that, we can only rely on other events to set correct isComposing state.
       if (event.isComposing === false) {
         state.isComposing = false
+      } else if (event.isComposing === true || event.inputType === 'insertCompositionText' && event.data) {
+        state.isComposing = true
       }
       if (
         !readOnly &&
