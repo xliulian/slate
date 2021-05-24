@@ -222,8 +222,16 @@ export const SelectionTransforms: SelectionTransforms = {
     if (Object.keys(oldProps).length > 0) {
       editor.apply({
         type: 'set_selection',
-        properties: oldProps,
-        newProperties: newProps,
+        properties: {
+          ...oldProps,
+          anchor: selection.anchor,
+          focus: selection.focus,
+        },
+        newProperties: {
+          anchor: selection.anchor,
+          focus: selection.focus,
+          ...newProps,
+        }
       })
     }
   },
