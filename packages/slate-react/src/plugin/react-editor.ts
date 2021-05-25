@@ -465,7 +465,23 @@ export const ReactEditor = {
 
       // Calculate how far into the text node the `nearestNode` is, so that we
       // can determine what the offset relative to the text node is.
-      if (leafNode) {
+      if (voidNode) {
+        // For void nodes, the element with the offset key will be a cousin, not an
+        // ancestor, so find it by going down from the nearest void parent.
+        leafNode = voidNode.querySelector('[data-slate-leaf]')!
+
+        // COMPAT: In read-only editors the leaf is not rendered.
+        if (!leafNode) {
+          offset = 1
+        } else {
+          textNode = leafNode.closest('[data-slate-node="text"]')!
+          domNode = leafNode
+          offset = domNode.textContent!.length
+          domNode.querySelectorAll('[data-slate-zero-width]').forEach(el => {
+            offset -= el.textContent!.length
+          })
+        }
+      } else if (leafNode) {
         textNode = leafNode.closest('[data-slate-node="text"]')!
         const window = ReactEditor.getWindow(editor)
         const range = window.document.createRange()
@@ -492,22 +508,6 @@ export const ReactEditor = {
         // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/10291116/
         offset = contents.textContent!.length
         domNode = textNode
-      } else if (voidNode) {
-        // For void nodes, the element with the offset key will be a cousin, not an
-        // ancestor, so find it by going down from the nearest void parent.
-        leafNode = voidNode.querySelector('[data-slate-leaf]')!
-
-        // COMPAT: In read-only editors the leaf is not rendered.
-        if (!leafNode) {
-          offset = 1
-        } else {
-          textNode = leafNode.closest('[data-slate-node="text"]')!
-          domNode = leafNode
-          offset = domNode.textContent!.length
-          domNode.querySelectorAll('[data-slate-zero-width]').forEach(el => {
-            offset -= el.textContent!.length
-          })
-        }
       }
 
       // COMPAT: If the parent node is a Slate zero-width space, editor is
