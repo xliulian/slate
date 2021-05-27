@@ -79,7 +79,7 @@ export const normalizeDOMPoint = (domPoint: DOMPoint): DOMPoint => {
   // If it's an element node, its offset refers to the index of its children
   // including comment nodes, so try to find the right text child node.
   if (isDOMElement(node) && node.childNodes.length) {
-    let isLast = offset === node.childNodes.length
+    let isLast = offset >= node.childNodes.length
     let index = isLast ? offset - 1 : offset
     ;[node, index] = getEditableChildAndIndex(
       node,
