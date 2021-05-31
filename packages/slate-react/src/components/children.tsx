@@ -1,6 +1,6 @@
 import React from 'react'
 import { Editor, Range, Element, NodeEntry, Ancestor, Descendant } from 'slate'
-import sortBy from 'lodash/sortBy'
+import orderBy from 'lodash/orderBy'
 
 import ElementComponent from './element'
 import TextComponent from './text'
@@ -32,13 +32,20 @@ const Children = (props: {
     !editor.isInline(node) &&
     Editor.hasInlines(editor, node)
 
-  const nodeChildren =
-    isLeafBlock || !node.childrenOrderedBy
-      ? node.children.map((child, idx) => [child, idx])
-      : sortBy(node.children, node.childrenOrderedBy).map(child => [
-          child,
-          node.children.indexOf(child),
-        ])
+const nodeChildren =
+  isLeafBlock || !node.childrenOrderedBy
+    ? node.children.map((child, idx) => [child, idx])
+    : (node.childrenOrderedBy.length === 2 &&
+      (['asc', 'desc'].includes(node.childrenOrderedBy[1]) ||
+        (Array.isArray(node.childrenOrderedBy[1]) &&
+          ['asc', 'desc'].includes(node.childrenOrderedBy[1][0])))
+        ? orderBy(
+            node.children,
+            node.childrenOrderedBy[0],
+            node.childrenOrderedBy[1] as 'asc' | 'desc' | ('asc' | 'desc')[]
+          )
+        : orderBy(node.children, node.childrenOrderedBy)
+      ).map((child) => [child, node.children.indexOf(child)])
 
   for (const child of nodeChildren) {
     const n = child[0] as Descendant
