@@ -388,7 +388,7 @@ export const ReactEditor = {
     }
 
     // Resolve a Slate range from the DOM range.
-    const range = ReactEditor.toSlateRange(editor, domRange)
+    const range = ReactEditor.toSlateRange(editor, domRange)!
     return range
   },
 
@@ -396,8 +396,14 @@ export const ReactEditor = {
    * Find a Slate point from a DOM selection's `domNode` and `domOffset`.
    */
 
-  toSlatePoint(editor: ReactEditor, domPoint: DOMPoint): Point {
-    const [nearestNode, nearestOffset] = normalizeDOMPoint(domPoint)
+  toSlatePoint<T extends boolean>(
+    editor: ReactEditor,
+    domPoint: DOMPoint,
+    exactMatch: T
+  ): T extends true ? Point | null : Point {
+    const [nearestNode, nearestOffset] = exactMatch
+      ? domPoint
+      : normalizeDOMPoint(domPoint)
     const parentNode = nearestNode.parentNode as DOMElement
     let textNode: DOMElement | null = null
     let offset = 0
@@ -416,8 +422,12 @@ export const ReactEditor = {
         range.setEnd(nearestNode, nearestOffset)
         const contents = range.cloneContents()
         const removals = [
-          ...contents.querySelectorAll('[data-slate-zero-width]'),
-          ...contents.querySelectorAll('[contenteditable=false]'),
+          ...Array.prototype.slice.call(
+            contents.querySelectorAll('[data-slate-zero-width]')
+          ),
+          ...Array.prototype.slice.call(
+            contents.querySelectorAll('[contenteditable=false]')
+          ),
         ]
 
         removals.forEach(el => {
@@ -434,14 +444,19 @@ export const ReactEditor = {
       } else if (voidNode) {
         // For void nodes, the element with the offset key will be a cousin, not an
         // ancestor, so find it by going down from the nearest void parent.
-
         leafNode = voidNode.querySelector('[data-slate-leaf]')!
-        textNode = leafNode.closest('[data-slate-node="text"]')!
-        domNode = leafNode
-        offset = domNode.textContent!.length
-        domNode.querySelectorAll('[data-slate-zero-width]').forEach(el => {
-          offset -= el.textContent!.length
-        })
+
+        // COMPAT: In read-only editors the leaf is not rendered.
+        if (!leafNode) {
+          offset = 1
+        } else {
+          textNode = leafNode.closest('[data-slate-node="text"]')!
+          domNode = leafNode
+          offset = domNode.textContent!.length
+          domNode.querySelectorAll('[data-slate-zero-width]').forEach(el => {
+            offset -= el.textContent!.length
+          })
+        }
       }
 
       // COMPAT: If the parent node is a Slate zero-width space, editor is
@@ -459,6 +474,9 @@ export const ReactEditor = {
     }
 
     if (!textNode) {
+      if (exactMatch) {
+        return null as T extends true ? Point | null : Point
+      }
       throw new Error(
         `Cannot resolve a Slate point from DOM point: ${domPoint}`
       )
@@ -469,17 +487,21 @@ export const ReactEditor = {
     // first, and then afterwards for the correct `element`. (2017/03/03)
     const slateNode = ReactEditor.toSlateNode(editor, textNode!)
     const path = ReactEditor.findPath(editor, slateNode)
-    return { path, offset }
+    return { path, offset } as T extends true ? Point | null : Point
   },
 
   /**
    * Find a Slate range from a DOM range or selection.
    */
 
-  toSlateRange(
+  toSlateRange<T extends boolean>(
     editor: ReactEditor,
-    domRange: DOMRange | DOMStaticRange | DOMSelection
-  ): Range {
+    domRange: DOMRange | DOMStaticRange | DOMSelection,
+    options?: {
+      exactMatch: T
+    }
+  ): T extends true ? Range | null : Range {
+    const { exactMatch } = options || {}
     const el =
       domRange instanceof Selection
         ? domRange.anchorNode
@@ -517,11 +539,24 @@ export const ReactEditor = {
       )
     }
 
-    const anchor = ReactEditor.toSlatePoint(editor, [anchorNode, anchorOffset])
+    const anchor = ReactEditor.toSlatePoint(
+      editor,
+      [anchorNode, anchorOffset],
+      !!exactMatch
+    )
+    if (!anchor) {
+      return null as T extends true ? Range | null : Range
+    }
+
     const focus = isCollapsed
       ? anchor
-      : ReactEditor.toSlatePoint(editor, [focusNode, focusOffset])
+      : ReactEditor.toSlatePoint(editor, [focusNode, focusOffset], !!exactMatch)
+    if (!focus) {
+      return null as T extends true ? Range | null : Range
+    }
 
-    return { anchor, focus }
+    return ({ anchor, focus } as unknown) as T extends true
+      ? Range | null
+      : Range
   },
 }

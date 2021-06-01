@@ -136,8 +136,8 @@ export const Editable = (props: EditableProps) => {
     []
   )
 
-  // Update element-related weak maps with the DOM element ref.
   useIsomorphicLayoutEffect(() => {
+    // Update element-related weak maps with the DOM element ref.
     if (ref.current) {
       EDITOR_TO_ELEMENT.set(editor, ref.current)
       NODE_TO_ELEMENT.set(editor, ref.current)
@@ -145,10 +145,8 @@ export const Editable = (props: EditableProps) => {
     } else {
       NODE_TO_ELEMENT.delete(editor)
     }
-  })
 
-  // Whenever the editor updates, make sure the DOM selection state is in sync.
-  useIsomorphicLayoutEffect(() => {
+    // Make sure the DOM selection state is in sync.
     const { selection } = editor
     const domSelection = window.getSelection()
 
@@ -174,15 +172,13 @@ export const Editable = (props: EditableProps) => {
     }
 
     // If the DOM selection is in the editor and the editor selection is already correct, we're done.
-    if (
-      hasDomSelection &&
-      hasDomSelectionInEditor &&
-      selection &&
-      (isDOMText(domSelection.anchorNode) || domSelection.anchorNode instanceof HTMLElement && domSelection.anchorNode.dataset.slateNode === 'text') &&
-      (isDOMText(domSelection.focusNode) || domSelection.focusNode  instanceof HTMLElement && domSelection.focusNode.dataset.slateNode === 'text') &&
-      Range.equals(ReactEditor.toSlateRange(editor, domSelection), selection)
-    ) {
-      return
+    if (hasDomSelection && hasDomSelectionInEditor && selection) {
+      const slateRange = ReactEditor.toSlateRange(editor, domSelection, {
+        exactMatch: true,
+      })
+      if (slateRange && Range.equals(slateRange, selection)) {
+        return
+      }
     }
 
     // Otherwise the DOM selection is out of sync, so update it.
@@ -287,7 +283,7 @@ export const Editable = (props: EditableProps) => {
           const [targetRange] = event.getTargetRanges()
 
           if (targetRange) {
-            const range = ReactEditor.toSlateRange(editor, targetRange)
+            const range = ReactEditor.toSlateRange(editor, targetRange)!
 
             if (!selection || !Range.equals(selection, range)) {
               Transforms.select(editor, range)
@@ -439,7 +435,7 @@ export const Editable = (props: EditableProps) => {
           isTargetInsideVoid(editor, focusNode)
 
         if (anchorNodeSelectable && focusNodeSelectable) {
-          const range = ReactEditor.toSlateRange(editor, domSelection)
+          const range = ReactEditor.toSlateRange(editor, domSelection)!
           Transforms.select(editor, range)
         } else {
           Transforms.deselect(editor)
