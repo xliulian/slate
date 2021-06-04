@@ -65,8 +65,21 @@ const nodeChildren =
     }
 
     if (Element.isElement(n)) {
-      children.push(
-        <IndexContext.Provider key={key.id} value={i}>
+      if (n.droppable) {
+        children.push(
+          <IndexContext.Provider key={key.id} value={i}>
+            <ElementComponent
+              decorations={ds}
+              element={n}
+              key={key.id}
+              renderElement={renderElement}
+              renderLeaf={renderLeaf}
+              selection={sel}
+            />
+          </IndexContext.Provider>
+        )
+      } else {
+        children.push(
           <ElementComponent
             decorations={ds}
             element={n}
@@ -75,8 +88,8 @@ const nodeChildren =
             renderLeaf={renderLeaf}
             selection={sel}
           />
-        </IndexContext.Provider>
-      )
+        )
+      }
     } else {
       children.push(
         <TextComponent
