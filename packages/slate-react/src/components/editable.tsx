@@ -859,7 +859,7 @@ export const Editable = (props: EditableProps) => {
               // hotkeys manually because browsers won't be able to skip over
               // the void node with the zero-width space not being an empty
               // string.
-              if (Hotkeys.isMoveBackward(nativeEvent)) {
+              if (!state.isComposing && Hotkeys.isMoveBackward(nativeEvent)) {
                 event.preventDefault()
 
                 if (selection && Range.isCollapsed(selection)) {
@@ -871,7 +871,7 @@ export const Editable = (props: EditableProps) => {
                 return
               }
 
-              if (Hotkeys.isMoveForward(nativeEvent)) {
+              if (!state.isComposing && Hotkeys.isMoveForward(nativeEvent)) {
                 event.preventDefault()
 
                 if (selection && Range.isCollapsed(selection)) {
