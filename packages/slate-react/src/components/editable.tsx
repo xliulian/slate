@@ -91,6 +91,7 @@ export interface RenderLeafProps {
 
 export type EditableProps = {
   decorate?: (entry: NodeEntry) => Range[]
+  useDecorateState?: () => any
   onDOMBeforeInput?: (event: Event) => void
   placeholder?: string
   readOnly?: boolean
@@ -110,6 +111,7 @@ export const Editable = (props: EditableProps) => {
   const {
     autoFocus,
     decorate = defaultDecorate,
+    useDecorateState,
     onDOMBeforeInput: propsOnDOMBeforeInput,
     placeholder,
     readOnly = false,
@@ -471,6 +473,11 @@ export const Editable = (props: EditableProps) => {
   }, [onDOMSelectionChange])
 
   const decorations = decorate([editor, []])
+
+  const decorateContextValue = useMemo(() => ({
+    decorate,
+    useDecorateState,
+  }), [decorate, useDecorateState])
 
   if (
     placeholder &&
@@ -1013,7 +1020,7 @@ export const Editable = (props: EditableProps) => {
           [readOnly, attributes.onPaste]
         )}
       >
-        <DecorateContext.Provider value={decorate}>
+        <DecorateContext.Provider value={decorateContextValue}>
           <Children
             decorations={decorations}
             node={editor}

@@ -23,8 +23,13 @@ const Children = (props: {
   selection: Range | null
 }) => {
   const { decorations, node, renderElement, renderLeaf, selection } = props
-  const decorate = useDecorate()
   const editor = useSlateStatic()
+  const { decorate, useDecorateState } = useDecorate()
+  const decorateState = useDecorateState && useDecorateState()
+  if (decorateState) {
+    // decorateState with the element key changes when we need re-run decorate by some external condition.
+    decorateState[ReactEditor.findKey(editor, node).id];
+  }
   const path = ReactEditor.findPath(editor, node)
   const children = []
   const isLeafBlock =
