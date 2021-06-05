@@ -40,15 +40,7 @@ const Element = (props: {
   const isInline = editor.isInline(element)
   const key = ReactEditor.findKey(editor, element)
 
-  let children: JSX.Element | null = (
-    <Children
-      decorations={decorations}
-      node={element}
-      renderElement={renderElement}
-      renderLeaf={renderLeaf}
-      selection={selection}
-    />
-  )
+  let children: JSX.Element | null
 
   // Attributes that the developer must mix into the element in their
   // custom node renderer component.
@@ -106,6 +98,16 @@ const Element = (props: {
 
     NODE_TO_INDEX.set(text, 0)
     NODE_TO_PARENT.set(text, element)
+  } else {
+    children  = (
+      <Children
+        decorations={decorations}
+        node={element}
+        renderElement={renderElement}
+        renderLeaf={renderLeaf}
+        selection={selection}
+      />
+    )
   }
 
   // Update element-related weak maps with the DOM element ref.
