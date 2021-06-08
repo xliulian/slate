@@ -281,7 +281,8 @@ export const ReactEditor = {
     const { anchor, focus } = range
     const isBackward = Range.isBackward(range)
     const domAnchor = ReactEditor.toDOMPoint(editor, anchor)
-    const domFocus = Range.isCollapsed(range)
+    const isCollapsed = Range.isCollapsed(range)
+    const domFocus = isCollapsed
       ? domAnchor
       : ReactEditor.toDOMPoint(editor, focus)
 
@@ -303,6 +304,11 @@ export const ReactEditor = {
 
     domRange.setStart(startNode, isStartAtZeroWidth ? 1 : startOffset)
     domRange.setEnd(endNode, isEndAtZeroWidth ? 1 : endOffset)
+    if (!isCollapsed && domRange.collapsed) {
+      // maybe caused by ordered children caused reversed selection, try reversed.
+      domRange.setStart(endNode, isEndAtZeroWidth ? 1 : endOffset)
+      domRange.setEnd(startNode, isStartAtZeroWidth ? 1 : startOffset)
+    }
     return domRange
   },
 
