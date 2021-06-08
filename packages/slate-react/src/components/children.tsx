@@ -70,7 +70,7 @@ const nodeChildren =
     }
 
     if (Element.isElement(n)) {
-      if (n.droppable) {
+      if (node.droppable) {
         children.push(
           <IndexContext.Provider key={key.id} value={i}>
             <ElementComponent
