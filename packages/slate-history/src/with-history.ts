@@ -88,11 +88,12 @@ export const withHistory = <T extends Editor>(editor: T) => {
       }
 
       if (lastBatch && merge) {
+        let mergedOp = null
         if (overwrite) {
           lastBatch.pop()
           // XXX: only set_selection op do override, and we do it carefully also for the incomplete set_selection case.
           if (op.type === 'set_selection' && lastOp?.type === 'set_selection' && op.newProperties) {
-            op = {
+            mergedOp = {
               ...lastOp!,
               newProperties: {
                 ...lastOp.newProperties,
@@ -102,7 +103,7 @@ export const withHistory = <T extends Editor>(editor: T) => {
           }
         }
 
-        lastBatch.push(op)
+        lastBatch.push(mergedOp || op)
       } else {
         const batch = [op]
         undos.push(batch)
