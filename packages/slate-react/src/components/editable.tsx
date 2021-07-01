@@ -22,6 +22,7 @@ import {
   IS_SAFARI,
   IS_EDGE_LEGACY,
   IS_CHROME_LEGACY,
+  IS_WECHAT,
 } from '../utils/environment'
 import { ReactEditor } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
@@ -52,6 +53,7 @@ import {
 const HAS_BEFORE_INPUT_SUPPORT =
   !IS_CHROME_LEGACY &&
   !IS_EDGE_LEGACY &&
+  !IS_WECHAT &&
   globalThis.InputEvent &&
   // @ts-ignore The `getTargetRanges` property isn't recognized.
   typeof globalThis.InputEvent.prototype.getTargetRanges === 'function'
@@ -647,7 +649,7 @@ export const Editable = (props: EditableProps) => {
               // aren't correct and never fire the "insertFromComposition"
               // type that we need. So instead, insert whenever a composition
               // ends since it will already have been committed to the DOM.
-              if (!IS_SAFARI && !IS_FIREFOX_LEGACY && !IS_IOS && event.data) {
+              if (!IS_SAFARI && !IS_FIREFOX_LEGACY && !IS_WECHAT && !IS_IOS && event.data) {
                 Editor.insertText(editor, event.data)
               }
             }

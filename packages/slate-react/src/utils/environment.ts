@@ -36,6 +36,10 @@ export const IS_FIREFOX_LEGACY =
     navigator.userAgent
   )
 
+export const IS_WECHAT = 
+  typeof navigator !== 'undefined' &&
+    /MicroMessenger/i.test(navigator.userAgent)
+
 // Check if DOM is available as React does internally.
 // https://github.com/facebook/react/blob/master/packages/shared/ExecutionEnvironment.js
 export const CAN_USE_DOM = !!(
