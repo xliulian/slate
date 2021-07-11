@@ -195,3 +195,53 @@ export const getPlainText = (domNode: DOMNode) => {
 
   return text
 }
+
+export const getDomPath = (el: DOMNode) => {
+  if (!el) {
+    return
+  }
+  const stack = []
+  let isShadow = false
+  while (el.parentNode !== null) {
+    let sibCount = 0
+    let sibIndex = 0
+    for (let i = 0; i < el.parentNode.childNodes.length; i += 1) {
+      const sib = el.parentNode.childNodes[i]
+      if (sib.nodeName === el.nodeName) {
+        if (sib === el) {
+          sibIndex = sibCount
+        }
+        sibCount += 1
+      }
+    }
+
+    let nodeName = CSS.escape(el.nodeName.toLowerCase())
+
+    if (isShadow) {
+      nodeName += "::shadow"
+      isShadow = false
+    }
+
+    // Ignore `html` as a parent node
+    if (nodeName === 'html') break
+
+    // if ( el.hasAttribute('id') && el.id != '' ) { no id shortcuts, ids are not unique in shadowDom
+    //   stack.unshift(`#${CSS.escape(el.id)}`);
+    // } else
+    if (sibCount > 1) {
+      stack.unshift(`${nodeName}:nth-of-type(${sibIndex + 1})`)
+    } else {
+      stack.unshift(nodeName)
+    }
+
+    el = el.parentNode
+
+    if (el.nodeType === 11) { // for shadow dom, we
+      isShadow = true
+      el = el.host
+    }
+  }
+
+  return stack
+}
+

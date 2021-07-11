@@ -20,6 +20,7 @@ import {
   DOMStaticRange,
   isDOMElement,
   normalizeDOMPoint,
+  getDomPath,
 } from '../utils/dom'
 
 /**
@@ -484,7 +485,7 @@ export const ReactEditor = {
         return null as T extends true ? Point | null : Point
       }
       throw new Error(
-        `Cannot resolve a Slate point from DOM point: ${domPoint}`
+        `Cannot resolve a Slate point from DOM point: ${domPoint} ${getDomPath(domPoint[0]).join(' > ')}`
       )
     }
 
