@@ -327,7 +327,8 @@ export const ReactEditor = {
     const node = domEl ? ELEMENT_TO_NODE.get(domEl as HTMLElement) : null
 
     if (!node) {
-      throw new Error(`Cannot resolve a Slate node from DOM node: ${domEl}`)
+      console.warn('Cannot resolve a Slate node from DOM node:', domEl, `${getDomPath(domEl!)}`)
+      throw new Error(`Cannot resolve a Slate node from DOM node: ${domEl} ${getDomPath(domEl!)}`)
     }
 
     return node
@@ -484,8 +485,9 @@ export const ReactEditor = {
       if (exactMatch) {
         return null as T extends true ? Point | null : Point
       }
+      console.warn('Cannot resolve a Slate point from DOM point:', domPoint, `${getDomPath(domPoint[0])}`)
       throw new Error(
-        `Cannot resolve a Slate point from DOM point: ${domPoint} ${getDomPath(domPoint[0]).join(' > ')}`
+        `Cannot resolve a Slate point from DOM point: ${domPoint} ${getDomPath(domPoint[0])}`
       )
     }
 
