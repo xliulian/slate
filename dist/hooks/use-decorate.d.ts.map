@@ -1,0 +1,1 @@
+{"version":3,"file":"use-decorate.d.ts","sourceRoot":"","sources":["../packages/slate-react/src/hooks/use-decorate.ts"],"names":[],"mappings":";AACA,OAAO,EAAE,KAAK,EAAE,SAAS,EAAE,MAAM,OAAO,CAAA;AAExC;;GAEG;AAEH,eAAO,MAAM,eAAe;8DACM,KAAK,EAAE;8BACd,GAAG;EAG5B,CAAA;AAEF;;GAEG;AAEH,eAAO,MAAM,WAAW;8DACU,KAAK,EAAE;8BACd,GAAG;CAG7B,CAAA"}
